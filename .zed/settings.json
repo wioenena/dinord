@@ -1,0 +1,32 @@
+{
+	"languages": {
+		"TypeScript": {
+			"language_servers": [
+				"deno",
+				"biome",
+				"!typescript-language-server",
+				"!vtsls",
+				"!eslint"
+			],
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		},
+		"JSON": {
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		},
+		"JSONC": {
+			"formatter": {
+				"language_server": {
+					"name": "biome"
+				}
+			}
+		}
+	}
+}

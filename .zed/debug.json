@@ -1,0 +1,13 @@
+[
+	{
+		"label": "Debug project (Deno)",
+		"adapter": "JavaScript",
+		"request": "launch",
+		"type": "pwa-node",
+		"cwd": "$ZED_WORKTREE_ROOT",
+		"program": "$ZED_WORKTREE_ROOT/test/main.ts",
+		"runtimeExecutable": "deno",
+		"runtimeArgs": ["run", "--allow-net", "--inspect-wait"],
+		"attachSimplePort": 9229
+	}
+]
