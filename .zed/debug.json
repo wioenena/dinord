@@ -7,7 +7,13 @@
 		"cwd": "$ZED_WORKTREE_ROOT",
 		"program": "$ZED_WORKTREE_ROOT/test/main.ts",
 		"runtimeExecutable": "deno",
-		"runtimeArgs": ["run", "--allow-net", "--inspect-wait"],
+		"runtimeArgs": [
+			"run",
+			"--allow-net",
+			"--allow-env",
+			"--env-file=./test/.env",
+			"--inspect-wait"
+		],
 		"attachSimplePort": 9229
 	}
 ]
