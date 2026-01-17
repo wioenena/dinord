@@ -1,7 +1,10 @@
 {
 	"$schema": "https://raw.githubusercontent.com/denoland/deno/refs/heads/main/cli/schemas/config-file.v1.json",
 	"tasks": {
-		"start": "deno run --allow-net --watch ./test/main.ts"
+		"start": "deno run --allow-net --allow-env --env-file=./test/.env ./test/main.ts"
+	},
+	"imports": {
+		"dinord": "./libs/dinord/mod.ts"
 	},
 	"lint": {
 		"exclude": ["**/*"]
