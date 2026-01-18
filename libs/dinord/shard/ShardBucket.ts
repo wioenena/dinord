@@ -4,18 +4,22 @@ import { Collection } from "../collection/mod.ts";
 import { Logger, type LogLevel } from "../logger/mod.ts";
 import { defProp, isNullOrUndefined } from "../utils/mod.ts";
 import { Shard } from "./Shard.ts";
+import type { ShardContext } from "./ShardContext.ts";
 import type { ShardId } from "./types.d.ts";
 
 export type BucketId = number;
 
 export class ShardBucket {
   private readonly logger!: Logger;
+  private readonly context!: ShardContext;
+
   public readonly id!: BucketId;
   public readonly queue!: ShardId[];
   public readonly shards!: Collection<ShardId, Shard>;
 
-  public constructor(id: BucketId, logLevel: LogLevel) {
+  public constructor(id: BucketId, context: ShardContext, logLevel: LogLevel) {
     defProp(this, "id", id);
+    defProp(this, "context", context);
     defProp(this, "logger", new Logger(logLevel, `${ShardBucket.name}(${this.id})`));
     defProp(this, "queue", []);
     defProp(this, "shards", new Collection());
@@ -23,7 +27,7 @@ export class ShardBucket {
 
   public addShard(shardId: ShardId) {
     this.queue.push(shardId);
-    this.shards.set(shardId, new Shard(shardId, this.logger.level));
+    this.shards.set(shardId, new Shard(shardId, this.context, this.logger.level));
   }
 
   public async startShards() {

@@ -2,25 +2,30 @@ import { assert } from "@std/assert";
 import { Collection } from "../collection/mod.ts";
 import { Logger, type LogLevel } from "../logger/mod.ts";
 import type { RestManager } from "../rest/mod.ts";
+import { TimerManager } from "../timer/TimerManager.ts";
 import type { Nullable } from "../types.d.ts";
-import { defProp, isGreaterThan, isNull, isNumber } from "../utils/mod.ts";
+import { defProp, isGreaterThan, isNumber } from "../utils/mod.ts";
 import { type BucketId, ShardBucket } from "./ShardBucket.ts";
-import type { GatewayBotResponse, ShardOptionsProps } from "./types.d.ts";
+import { ShardContext } from "./ShardContext.ts";
+import type { GatewayBotResponse, ShardManagerOptions } from "./types.d.ts";
 
 export class ShardManager {
-  public readonly logger!: Logger;
-  public readonly rest!: RestManager;
-  public readonly buckets!: Collection<BucketId, ShardBucket>;
-  public readonly options!: ShardOptionsProps;
+  private readonly logger!: Logger;
   private maxConcurrency!: Nullable<number>;
   private totalShards!: Nullable<number>;
 
-  public constructor(rest: RestManager, shardOptions: ShardOptionsProps, logLevel: LogLevel) {
+  public readonly rest!: RestManager;
+  public readonly buckets!: Collection<BucketId, ShardBucket>;
+  public readonly options!: ShardManagerOptions;
+  public context!: Nullable<ShardContext>;
+
+  public constructor(rest: RestManager, shardOptions: ShardManagerOptions, logLevel: LogLevel) {
     defProp(this, "logger", new Logger(logLevel, ShardManager.name));
     defProp(this, "rest", rest);
     defProp(this, "buckets", new Collection());
     defProp(this, "options", shardOptions);
     defProp(this, "maxConcurrency", null, { writable: true });
+    defProp(this, "context", null, { writable: true });
 
     if (isNumber(this.options.totalShards) && isGreaterThan(this.options.totalShards, 0)) {
       defProp(this, "totalShards", this.options.totalShards, { writable: true });
@@ -31,9 +36,12 @@ export class ShardManager {
     const gatewayBot = await this.rest.get<GatewayBotResponse>("/gateway/bot");
     this.maxConcurrency = gatewayBot.session_start_limit.max_concurrency;
 
-    if (this.options.totalShards === "auto" || isNull(this.totalShards)) {
+    if (this.options.totalShards === "auto") {
       this.totalShards = gatewayBot.shards;
     }
+
+    assert(this.totalShards);
+    this.context = new ShardContext(new TimerManager("ShardManager", this.logger.level), this.totalShards, this.options);
 
     this.spawnBuckets();
     this.spawnShards();
@@ -42,11 +50,12 @@ export class ShardManager {
 
   private spawnBuckets() {
     assert(this.maxConcurrency);
+    assert(this.context);
     this.logger.debug("Spawning buckets");
 
     for (let bucketId = 0; bucketId < this.maxConcurrency; ++bucketId) {
       if (!this.buckets.has(bucketId)) {
-        this.buckets.set(bucketId, new ShardBucket(bucketId, this.logger.level));
+        this.buckets.set(bucketId, new ShardBucket(bucketId, this.context, this.logger.level));
         this.logger.debug(`Bucket cache created for bucket ${bucketId}`);
       }
     }
@@ -74,6 +83,6 @@ export class ShardManager {
     this.logger.debug("Starting shards in buckets");
     const bucketPromises = this.buckets.values().map((bucket) => bucket.startShards());
     await Promise.all(bucketPromises);
-    this.logger.debug("All shards started in buckets started");
+    this.logger.debug("All shards started in buckets");
   }
 }
