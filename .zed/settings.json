@@ -1,37 +1,37 @@
 {
-	"code_actions_on_format": {
-		"source.organizeImports.biome": true,
-		"source.fixAll.biome": true
-	},
-	"languages": {
-	"TypeScript": {
-			"language_servers": [
-				"deno",
-				"biome",
-				"discord_presence",
-				"!typescript-language-server",
-				"!vtsls",
-				"!eslint"
-			],
-			"formatter": {
-				"language_server": {
-					"name": "biome"
-				}
-			}
-		},
-		"JSON": {
-			"formatter": {
-				"language_server": {
-					"name": "biome"
-				}
-			}
-		},
-		"JSONC": {
-			"formatter": {
-				"language_server": {
-					"name": "biome"
-				}
-			}
-		}
-	}
+  "code_actions_on_format": {
+    "source.organizeImports.biome": true,
+    "source.fixAll.biome": true
+  },
+  "languages": {
+    "TypeScript": {
+      "language_servers": [
+        "deno",
+        "biome",
+        "discord_presence",
+        "!typescript-language-server",
+        "!vtsls",
+        "!eslint"
+      ],
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      }
+    },
+    "JSON": {
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      }
+    },
+    "JSONC": {
+      "formatter": {
+        "language_server": {
+          "name": "biome"
+        }
+      }
+    }
+  }
 }
