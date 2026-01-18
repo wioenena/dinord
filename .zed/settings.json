@@ -4,10 +4,11 @@
 		"source.fixAll.biome": true
 	},
 	"languages": {
-		"TypeScript": {
+	"TypeScript": {
 			"language_servers": [
 				"deno",
 				"biome",
+				"discord_presence",
 				"!typescript-language-server",
 				"!vtsls",
 				"!eslint"
