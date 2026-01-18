@@ -1,4 +1,5 @@
-import { Client, ClientOptions, LogLevel } from "dinord";
+import { Client, LogLevel, RestManager, ShardManager } from "dinord";
+import { type TimerCallback, TimerManager } from "../libs/dinord/timer/TimerManager.ts";
 
 const token = Deno.env.get("TOKEN");
 
@@ -7,13 +8,12 @@ if (token === undefined) {
   Deno.exit(1);
 }
 
-const options = new ClientOptions({
-  token,
-  shardOptions: {
-    totalShards: "auto",
-  },
-  logLevel: LogLevel.VERBOSE,
-});
-const client = new Client(options);
+const logLevel = LogLevel.VERBOSE;
+
+const restManager = new RestManager(logLevel, token);
+const shardManager = new ShardManager(restManager, { totalShards: "auto", token, intents: 0 }, logLevel);
+const client = new Client(restManager, shardManager, logLevel);
 
 await client.start();
+
+client.logger.debug("Client started");
