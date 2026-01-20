@@ -1,1 +1,3 @@
+- [ ] Implement query parameters for images [See](https://discord.com/developers/docs/reference#image-formatting-image-base-url)
 - [ ] Implement Image Formats [See](https://discord.com/developers/docs/reference#image-formatting-image-formats)
+- [ ] Implement CDN Endpoints [See](https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints)
