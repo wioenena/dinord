@@ -1,0 +1,1 @@
+- [ ] Implement Image Formats [See](https://discord.com/developers/docs/reference#image-formatting-image-formats)
