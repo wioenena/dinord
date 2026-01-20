@@ -1,0 +1,10 @@
+{
+  "name": "@dinord/api-types",
+  "version": "0.0.1",
+  "exports": "./mod.ts",
+  "tasks": {},
+  "license": "MIT",
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^1.0.17"
+  }
+}
