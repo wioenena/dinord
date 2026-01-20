@@ -1,0 +1,8 @@
+{
+  "name": "@dinord/core",
+  "version": "0.0.1",
+  "exports": "./mod.ts",
+  "tasks": {},
+  "license": "MIT",
+  "imports": {}
+}
