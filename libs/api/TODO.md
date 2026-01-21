@@ -1,5 +1,8 @@
 - [x] Implement query parameters for images [See](https://discord.com/developers/docs/reference#image-formatting-image-base-url)
 - [x] Implement Image Formats [See](https://discord.com/developers/docs/reference#image-formatting-image-formats)
-- [ ] Implement receive the numbers in string format, but subject them to a validation process
-- [ ] Implement CDN Endpoints [See](https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints)
+- [x] Implement CDN Endpoints [See](https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints)
 - [ ] Look into uploading files
+- [ ] Implement interaction types [See](https://discord.com/developers/docs/interactions/overview)
+- [ ] Implement components types [See](https://discord.com/developers/docs/components/overview)
+- [ ] Implement gateway types [See](https://discord.com/developers/docs/events/overview)
+- [ ] Implement Resources [See](https://discord.com/developers/docs/resources/application-role-connection-metadata)
