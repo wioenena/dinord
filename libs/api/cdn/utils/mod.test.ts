@@ -4,6 +4,10 @@ import { assertEquals, assertThrows } from "@std/assert";
 import { IMAGE_BASE_URL } from "../constants.ts";
 import { CdnEndpoints, getDefaultUserAvatarIndexByDiscriminator, getDefaultUserAvatarIndexById } from "./mod.ts";
 
+const makeUrl = (...parts: string[]) => {
+  return joinURL(IMAGE_BASE_URL, ...parts);
+};
+
 Deno.test(getDefaultUserAvatarIndexById.name, () => {
   assertEquals(getDefaultUserAvatarIndexById(new Snowflake(1461875533708005540n)), 0);
 });
@@ -12,22 +16,23 @@ Deno.test(getDefaultUserAvatarIndexByDiscriminator.name, () => {
   assertEquals(getDefaultUserAvatarIndexByDiscriminator(1234), 4);
 });
 
-const makeUrl = (...parts: string[]) => {
-  return joinURL(IMAGE_BASE_URL, ...parts);
-};
-
 Deno.test("CdnEndpoints", async (t) => {
   await t.step("Unsupported format", () => {
     assertThrows(() => {
       // @ts-expect-error
-      CdnEndpoints.customEmoji("123", ".json", 16);
+      CdnEndpoints.customEmoji(new Snowflake(123n), ".json", 16);
     });
   });
+
   await t.step("Unsupported size", () => {
     assertThrows(() => {
       // @ts-expect-error
-      CdnEndpoints.customEmoji("123", ".png", 15);
+      CdnEndpoints.customEmoji(new Snowflake(123n), ".png", 15);
     });
+  });
+
+  await t.step("Size with string value", () => {
+    CdnEndpoints.customEmoji(new Snowflake(123n), ".png", "16");
   });
 
   await t.step(CdnEndpoints.customEmoji.name, () => {
