@@ -2,3 +2,4 @@
 - [x] Implement Image Formats [See](https://discord.com/developers/docs/reference#image-formatting-image-formats)
 - [ ] Implement receive the numbers in string format, but subject them to a validation process
 - [ ] Implement CDN Endpoints [See](https://discord.com/developers/docs/reference#image-formatting-cdn-endpoints)
+- [ ] Look into uploading files
