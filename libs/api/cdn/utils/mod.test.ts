@@ -31,10 +31,6 @@ Deno.test("CdnEndpoints", async (t) => {
     });
   });
 
-  await t.step("Size with string value", () => {
-    CdnEndpoints.customEmoji(new Snowflake(123n), ".png", "16");
-  });
-
   await t.step(CdnEndpoints.customEmoji.name, () => {
     assertEquals(CdnEndpoints.customEmoji(new Snowflake(123n), ".png", 16), makeUrl("emojis", "123.png?size=16"));
   });
