@@ -1,5 +1,5 @@
+import type { Snowflake } from "@dinord/snowflake";
 import { isNullOrUndefined } from "@dinord/utils";
-import type { Snowflake } from "../../types.d.ts";
 import type {
   ChannelMention,
   CustomEmoji,
@@ -19,11 +19,11 @@ import type {
   UserMention,
 } from "./types.d.ts";
 
-export const formatUserMention = (id: Snowflake): UserMention => `<@${id}>`;
+export const formatUserMention = (id: Snowflake): UserMention => `<@${id.value}>`;
 
-export const formatChannelMention = (id: Snowflake): ChannelMention => `<#${id}>`;
+export const formatChannelMention = (id: Snowflake): ChannelMention => `<#${id.value}>`;
 
-export const formatRoleMention = (id: Snowflake): RoleMention => `<@&${id}>`;
+export const formatRoleMention = (id: Snowflake): RoleMention => `<@&${id.value}>`;
 
 export const formatSlashCommand = (
   id: Snowflake,
@@ -35,13 +35,14 @@ export const formatSlashCommand = (
     throw new Error("Subcommand group provided without subcommand");
   }
 
-  if (!isNullOrUndefined(subCommandGroup) && !isNullOrUndefined(subCommand)) return `</${name} ${subCommandGroup.trim()} ${subCommand.trim()}:${id}>`;
-  if (!isNullOrUndefined(subCommand)) return `</${name.trim()} ${subCommand.trim()}:${id}>`;
-  return `</${name.trim()}:${id}>`;
+  if (!isNullOrUndefined(subCommandGroup) && !isNullOrUndefined(subCommand))
+    return `</${name} ${subCommandGroup.trim()} ${subCommand.trim()}:${id.value}>`;
+  if (!isNullOrUndefined(subCommand)) return `</${name.trim()} ${subCommand.trim()}:${id.value}>`;
+  return `</${name.trim()}:${id.value}>`;
 };
 
 export const formatCustomEmoji = (id: Snowflake, name: EmojiName, animated?: boolean): CustomEmoji =>
-  `<${animated === true ? "a" : ""}:${name}:${id}>`;
+  `<${animated === true ? "a" : ""}:${name}:${id.value}>`;
 
 export const formatUnixTimestamp = (dateOrTimestamp: Date | number, style?: UnixTimestampStyles): UnixTimestamp => {
   const seconds = Math.floor((dateOrTimestamp instanceof Date ? dateOrTimestamp.getTime() : dateOrTimestamp) / 1000);
@@ -50,7 +51,7 @@ export const formatUnixTimestamp = (dateOrTimestamp: Date | number, style?: Unix
   return `<t:${seconds}>`;
 };
 
-export const formatGuildNavigation = (id: Snowflake, type: GuildNavigationTypes): GuildNavigation => `<${id}:${type}>`;
+export const formatGuildNavigation = (id: Snowflake, type: GuildNavigationTypes): GuildNavigation => `<${id.value}:${type}>`;
 
 export const formatPhoneLink = (phoneNumber: PhoneNumberString, uriPrefixed?: boolean): PhoneLink => {
   const prefix = uriPrefixed === true ? "tel:" : "";

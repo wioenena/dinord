@@ -1,22 +1,22 @@
-import type { Snowflake } from "../../types.d.ts";
+import type { SnowflakeString } from "@dinord/snowflake";
 
-export type UserMention = `<@${Snowflake}>`;
-export type UserMentionDeprecated = `<@!${Snowflake}>`;
-export type ChannelMention = `<#${Snowflake}>`;
-export type RoleMention = `<@&${Snowflake}>`;
+export type UserMention = `<@${SnowflakeString}>`;
+export type UserMentionDeprecated = `<@!${SnowflakeString}>`;
+export type ChannelMention = `<#${SnowflakeString}>`;
+export type RoleMention = `<@&${SnowflakeString}>`;
 
 export type SlashCommandName = string;
-export type RootSlashCommand = `</${SlashCommandName}:${Snowflake}>`;
-export type SubSlashCommand = `</${SlashCommandName} ${SlashCommandName}:${Snowflake}>`;
-export type SubSlashCommandGroup = `</${SlashCommandName} ${SlashCommandName} ${SlashCommandName}:${Snowflake}>`;
+export type RootSlashCommand = `</${SlashCommandName}:${SnowflakeString}>`;
+export type SubSlashCommand = `</${SlashCommandName} ${SlashCommandName}:${SnowflakeString}>`;
+export type SubSlashCommandGroup = `</${SlashCommandName} ${SlashCommandName} ${SlashCommandName}:${SnowflakeString}>`;
 
 export type SlashCommand = RootSlashCommand | SubSlashCommand | SubSlashCommandGroup;
 
 export type StandardEmoji = string;
 
 export type EmojiName = string;
-export type CustomEmojiNoAnimated = `<:${EmojiName}:${Snowflake}>`;
-export type CustomEmojiAnimated = `<a:${EmojiName}:${Snowflake}>`;
+export type CustomEmojiNoAnimated = `<:${EmojiName}:${SnowflakeString}>`;
+export type CustomEmojiAnimated = `<a:${EmojiName}:${SnowflakeString}>`;
 export type CustomEmoji = CustomEmojiNoAnimated | CustomEmojiAnimated;
 
 export type UnixTimestampUnstyled = `<t:${number}>`;
@@ -25,7 +25,7 @@ export type UnixTimestampStyled = `<t:${number}:${UnixTimestampStyles}>`;
 export type UnixTimestamp = UnixTimestampUnstyled | UnixTimestampStyled;
 
 export type GuildNavigationTypes = "customize" | "browse" | "guide" | "linked-roles";
-export type GuildNavigation = `<${Snowflake}:${GuildNavigationTypes}>`;
+export type GuildNavigation = `<${SnowflakeString}:${GuildNavigationTypes}>`;
 
 export type EmailAddress = `${string}@${string}`;
 export type PhoneNumberString = `+${string}`;

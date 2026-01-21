@@ -1,4 +1,5 @@
 import { formatCustomEmoji } from "@dinord/api-types";
+import { Snowflake } from "@dinord/snowflake";
 import { assertEquals } from "@std/assert";
 import { assertThrows } from "@std/assert/throws";
 import {
@@ -17,22 +18,22 @@ import {
 } from "./mod.ts";
 
 Deno.test("formatUserMention", () => {
-  const id = "123";
+  const id = new Snowflake(123n)
   assertEquals(formatUserMention(id), `<@${id}>`);
 });
 
 Deno.test("formatChannelMention", () => {
-  const id = "123";
+  const id = new Snowflake(123n)
   assertEquals(formatChannelMention(id), `<#${id}>`);
 });
 
 Deno.test("formatRoleMention", () => {
-  const id = "123";
+  const id = new Snowflake(123n);
   assertEquals(formatRoleMention(id), `<@&${id}>`);
 });
 
 Deno.test("formatSlashCommand", async (t) => {
-  const id = "123";
+  const id = new Snowflake(123n);
   const name = "command";
   const group = "group";
   const subcommand = "subcommand";
@@ -54,7 +55,7 @@ Deno.test("formatSlashCommand", async (t) => {
 });
 
 Deno.test("formatCustomEmoji", async (t) => {
-  const id = "123";
+  const id = new Snowflake(123n);
   const name = "emoji";
   await t.step("With no animated", () => {
     assertEquals(formatCustomEmoji(id, name, false), `<:${name}:${id}>`);
@@ -83,7 +84,7 @@ Deno.test("formatUnixTimestamp", async (t) => {
 });
 
 Deno.test("formatGuildNavigation", () => {
-  const id = "123";
+  const id = new Snowflake(123n);
   const types: GuildNavigationTypes[] = ["customize", "browse", "guide", "linked-roles"];
   types.forEach((type) => {
     assertEquals(formatGuildNavigation(id, type), `<${id}:${type}>`);
