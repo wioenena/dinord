@@ -1,0 +1,3 @@
+- [ ] Implement snowflake generation logic
+- [ ] Implement snowflake validation 
+- [ ] Implement snowflake parsing logic
