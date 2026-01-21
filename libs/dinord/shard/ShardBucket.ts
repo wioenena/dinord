@@ -2,7 +2,7 @@ import { assert } from "@std/assert";
 import { delay } from "@std/async";
 import { Collection } from "../collection/mod.ts";
 import { Logger, type LogLevel } from "../logger/mod.ts";
-import { defProp, isNullOrUndefined } from "../utils/mod.ts";
+import { isNullOrUndefined } from "../utils/mod.ts";
 import { Shard } from "./Shard.ts";
 import type { ShardContext } from "./ShardContext.ts";
 import type { ShardId } from "./types.d.ts";
@@ -10,19 +10,19 @@ import type { ShardId } from "./types.d.ts";
 export type BucketId = number;
 
 export class ShardBucket {
-  private readonly logger!: Logger;
-  private readonly context!: ShardContext;
+  private readonly logger: Logger;
+  private readonly context: ShardContext;
 
-  public readonly id!: BucketId;
-  public readonly queue!: ShardId[];
-  public readonly shards!: Collection<ShardId, Shard>;
+  public readonly id: BucketId;
+  public readonly queue: ShardId[];
+  public readonly shards: Collection<ShardId, Shard>;
 
   public constructor(id: BucketId, context: ShardContext, logLevel: LogLevel) {
-    defProp(this, "id", id);
-    defProp(this, "context", context);
-    defProp(this, "logger", new Logger(logLevel, `${ShardBucket.name}(${this.id})`));
-    defProp(this, "queue", []);
-    defProp(this, "shards", new Collection());
+    this.id = id;
+    this.context = context;
+    this.logger = new Logger(logLevel, `${ShardBucket.name}(${this.id})`);
+    this.queue = [];
+    this.shards = new Collection();
   }
 
   public addShard(shardId: ShardId) {

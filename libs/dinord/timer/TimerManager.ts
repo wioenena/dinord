@@ -1,17 +1,16 @@
 import { Logger, type LogLevel } from "../logger/mod.ts";
-import { defProp } from "../utils/mod.ts";
 
 export type TimerCallback = (...args: unknown[]) => void;
 
 export class TimerManager {
-  private logger!: Logger;
-  private readonly timeouts!: Set<number>;
-  private readonly intervals!: Set<number>;
+  private logger: Logger;
+  private readonly timeouts: Set<number>;
+  private readonly intervals: Set<number>;
 
   public constructor(moduleName: string, logLevel: LogLevel) {
-    defProp(this, "logger", new Logger(logLevel, `TimerManager(${moduleName})`));
-    defProp(this, "timeouts", new Set());
-    defProp(this, "intervals", new Set());
+    this.logger = new Logger(logLevel, `TimerManager(${moduleName})`);
+    this.timeouts = new Set();
+    this.intervals = new Set();
   }
 
   public setTimeout(callback: TimerCallback, delay: number, unref = false, ...args: unknown[]) {

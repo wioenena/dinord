@@ -1,35 +1,35 @@
 import { assert } from "@std/assert";
 import { Collection } from "../collection/mod.ts";
+import type { GatewayBotResponse } from "../gateway/mod.ts";
 import { Logger, type LogLevel } from "../logger/mod.ts";
 import type { RestManager } from "../rest/mod.ts";
 import { TimerManager } from "../timer/TimerManager.ts";
-import type { Nullable } from "../types.d.ts";
-import { defProp, isGreaterThan, isNumber } from "../utils/mod.ts";
+import { isGreaterThan, isNumber } from "../utils/mod.ts";
 import { type BucketId, ShardBucket } from "./ShardBucket.ts";
 import { ShardContext } from "./ShardContext.ts";
-import type { GatewayBotResponse, ShardManagerOptions } from "./types.d.ts";
+import type { ShardManagerOptions } from "./types.d.ts";
 
 export class ShardManager {
-  private readonly logger!: Logger;
-  private maxConcurrency!: Nullable<number>;
-  private totalShards!: Nullable<number>;
+  private readonly logger: Logger;
+  private maxConcurrency?: number;
+  private totalShards?: number;
 
-  public readonly rest!: RestManager;
-  public readonly buckets!: Collection<BucketId, ShardBucket>;
-  public readonly options!: ShardManagerOptions;
-  public context!: Nullable<ShardContext>;
+  public readonly rest: RestManager;
+  public readonly buckets: Collection<BucketId, ShardBucket>;
+  public readonly options: ShardManagerOptions;
+  public context?: ShardContext;
 
   public constructor(rest: RestManager, shardOptions: ShardManagerOptions, logLevel: LogLevel) {
-    defProp(this, "logger", new Logger(logLevel, ShardManager.name));
-    defProp(this, "rest", rest);
-    defProp(this, "buckets", new Collection());
-    defProp(this, "options", shardOptions);
-    defProp(this, "maxConcurrency", null, { writable: true });
-    defProp(this, "context", null, { writable: true });
+    this.logger = new Logger(logLevel, ShardManager.name);
+    this.rest = rest;
+    this.buckets = new Collection();
+    this.options = shardOptions;
+    this.maxConcurrency = undefined;
+    this.context = undefined;
 
     if (isNumber(this.options.totalShards) && isGreaterThan(this.options.totalShards, 0)) {
-      defProp(this, "totalShards", this.options.totalShards, { writable: true });
-    } else defProp(this, "totalShards", null, { writable: true });
+      this.totalShards = this.options.totalShards;
+    } else this.totalShards = undefined;
   }
 
   public async start(): Promise<void> {
@@ -41,7 +41,7 @@ export class ShardManager {
     }
 
     assert(this.totalShards);
-    this.context = new ShardContext(new TimerManager("ShardManager", this.logger.level), this.totalShards, this.options);
+    this.context = new ShardContext(new TimerManager("ShardManager", this.logger.level), this.totalShards, this.options, this.logger.level);
 
     this.spawnBuckets();
     this.spawnShards();

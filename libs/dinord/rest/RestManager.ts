@@ -1,7 +1,7 @@
 import { delay } from "@std/async";
 import * as posix from "@std/path/posix";
 import { Logger, type LogLevel } from "../logger/mod.ts";
-import { defProp, isString } from "../utils/mod.ts";
+import { isString } from "../utils/mod.ts";
 import { DEFAULT_BASE_URL } from "./constants.ts";
 
 export type RequestSearchParams = Record<string, string>;
@@ -15,24 +15,18 @@ export type CreateRequestOptions = {
 };
 
 export class RestManager {
-  public readonly logger!: Logger;
-  public readonly token!: string;
-  public readonly baseURL!: string;
+  public readonly logger: Logger;
+  public readonly token: string;
+  public readonly baseURL: string;
 
   public constructor(logLevel: LogLevel, token: string, baseURL = DEFAULT_BASE_URL) {
-    defProp(this, "logger", new Logger(logLevel, RestManager.name));
-    defProp(this, "token", token);
-    defProp(this, "baseURL", baseURL, { enumerable: false });
+    this.logger = new Logger(logLevel, RestManager.name);
+    this.token = token;
+    this.baseURL = baseURL;
   }
 
-  public createRequest({
-    method = "GET",
-    path,
-    body,
-    searchParams,
-  }: CreateRequestOptions): Request {
-    if (!isString(path) || path.trim().length === 0)
-      throw new TypeError("CreateRequest: 'path' must be a non-empty string");
+  public createRequest({ method = "GET", path, body, searchParams }: CreateRequestOptions): Request {
+    if (!isString(path) || path.trim().length === 0) throw new TypeError("CreateRequest: 'path' must be a non-empty string");
 
     const url = new URL(posix.join(this.baseURL, path));
     if (searchParams !== undefined) {
@@ -58,8 +52,7 @@ export class RestManager {
     if (!response.ok) {
       if (response.status === 429) {
         const retryAfterValue = response.headers.get("Retry-After");
-        if (retryAfterValue === null)
-          throw new Error(`Request failed with status ${response.status}`);
+        if (retryAfterValue === null) throw new Error(`Request failed with status ${response.status}`);
 
         const retryAfter = parseFloat(retryAfterValue);
         this.logger.debug(`Rate limit exceeded, retrying in ${retryAfter}ms`);
@@ -77,41 +70,23 @@ export class RestManager {
     return response as TResponse;
   }
 
-  public get<TResponse = Response>(
-    path: string,
-    searchParams?: RequestSearchParams,
-  ): Promise<TResponse> {
+  public get<TResponse = Response>(path: string, searchParams?: RequestSearchParams): Promise<TResponse> {
     return this.makeRequest(this.createRequest({ path, searchParams, method: "GET" }));
   }
 
-  public post<TResponse = Response>(
-    path: string,
-    body?: RequestBody,
-    searchParams?: RequestSearchParams,
-  ): Promise<TResponse> {
+  public post<TResponse = Response>(path: string, body?: RequestBody, searchParams?: RequestSearchParams): Promise<TResponse> {
     return this.makeRequest(this.createRequest({ path, body, searchParams, method: "POST" }));
   }
 
-  public put<TResponse = Response>(
-    path: string,
-    body?: RequestBody,
-    searchParams?: RequestSearchParams,
-  ): Promise<TResponse> {
+  public put<TResponse = Response>(path: string, body?: RequestBody, searchParams?: RequestSearchParams): Promise<TResponse> {
     return this.makeRequest(this.createRequest({ path, body, searchParams, method: "PUT" }));
   }
 
-  public delete<TResponse = Response>(
-    path: string,
-    searchParams?: RequestSearchParams,
-  ): Promise<TResponse> {
+  public delete<TResponse = Response>(path: string, searchParams?: RequestSearchParams): Promise<TResponse> {
     return this.makeRequest(this.createRequest({ path, searchParams, method: "DELETE" }));
   }
 
-  public patch<TResponse = Response>(
-    path: string,
-    body?: RequestBody,
-    searchParams?: RequestSearchParams,
-  ): Promise<TResponse> {
+  public patch<TResponse = Response>(path: string, body?: RequestBody, searchParams?: RequestSearchParams): Promise<TResponse> {
     return this.makeRequest(this.createRequest({ path, body, searchParams, method: "PATCH" }));
   }
 }

@@ -1,10 +1,16 @@
 import { assert } from "@std/assert";
+import {
+  GatewayOpCode,
+  type GatewayReceiveEventPayload,
+  type GatewaySendEventPayload,
+  type HelloEventPayload,
+  type IdentifyPayload,
+  WS_URL,
+} from "../gateway/mod.ts";
 import { Logger, type LogLevel } from "../logger/mod.ts";
-import type { Nullable } from "../types.d.ts";
-import { defProp, isNullOrUndefined } from "../utils/mod.ts";
-import { GatewayOpCode, WS_URL } from "./constants.ts";
+import { isNullOrUndefined } from "../utils/mod.ts";
 import type { ShardContext } from "./ShardContext.ts";
-import type { GatewayReceiveEventPayload, GatewaySendEventPayload, HelloEventPayload, IdentifyPayload, ShardId } from "./types.d.ts";
+import type { ShardId } from "./types.d.ts";
 
 export enum ShardState {
   Connecting,
@@ -13,23 +19,29 @@ export enum ShardState {
 }
 
 export class Shard {
-  private readonly logger!: Logger;
-  private readonly context!: ShardContext;
-  private socket!: Nullable<WebSocket>;
-  private state!: ShardState;
-  private heartbeatIntervalId!: Nullable<number>;
-  private startPromiseResolve!: Nullable<() => void>;
+  private readonly logger: Logger;
+  private readonly context: ShardContext;
+  private socket?: WebSocket;
+  private state: ShardState;
+  private heartbeatIntervalId?: number;
+  private startPromiseResolve?: () => void;
+  private lastSequence: number | null;
+  private lastHeartbeatAck: Date | null;
+  private lastHeartbeatSent: Date | null;
 
-  public readonly id!: ShardId;
+  public readonly id: ShardId;
 
   public constructor(id: ShardId, context: ShardContext, logLevel: LogLevel) {
-    defProp(this, "id", id);
-    defProp(this, "logger", new Logger(logLevel, `${Shard.name}(${id})`));
-    defProp(this, "socket", null, { writable: true });
-    defProp(this, "state", ShardState.Disconnected, { writable: true });
-    defProp(this, "context", context);
-    defProp(this, "heartbeatIntervalId", null, { writable: true });
-    defProp(this, "startPromiseResolve", null, { writable: true });
+    this.id = id;
+    this.logger = new Logger(logLevel, `${Shard.name}(${this.id})`);
+    this.socket = undefined;
+    this.state = ShardState.Disconnected;
+    this.context = context;
+    this.heartbeatIntervalId = undefined;
+    this.startPromiseResolve = undefined;
+    this.lastSequence = null;
+    this.lastHeartbeatAck = null;
+    this.lastHeartbeatSent = null;
     this.logger.debug(`Shard(${id}) created`);
   }
 
@@ -67,9 +79,10 @@ export class Shard {
   }
 
   private handlePayload(payload: GatewayReceiveEventPayload) {
+    this.lastSequence = payload.s;
     switch (payload.op) {
       case GatewayOpCode.Dispatch:
-        this.logger.warn("GatewayOpCode.Dispatch event unimplemented yet");
+        this.handleDispatch(payload);
         break;
       case GatewayOpCode.Heartbeat:
         this.logger.warn("GatewayOpCode.Heartbeat event unimplemented yet");
@@ -99,7 +112,7 @@ export class Shard {
         this.handleHelloEvent(payload as GatewayReceiveEventPayload<HelloEventPayload>);
         break;
       case GatewayOpCode.HeartbeatACK:
-        this.logger.warn("GatewayOpCode.HeartbeatACK event unimplemented yet");
+        this.handleHeartbeatAck();
         break;
       case GatewayOpCode.RequestSoundboardSounds:
         this.logger.warn("GatewayOpCode.RequestSoundboardSounds event unimplemented yet");
@@ -108,6 +121,11 @@ export class Shard {
         this.logger.warn(`GatewayOpCode ${payload.op} event unimplemented yet`);
         break;
     }
+  }
+
+  private handleDispatch(payload: GatewayReceiveEventPayload<unknown>) {
+    assert(payload.t);
+    this.context.dispatchEventManager.dispatchEvent(payload.t, payload.d);
   }
 
   private handleHelloEvent(payload: GatewayReceiveEventPayload<HelloEventPayload>) {
@@ -164,7 +182,7 @@ export class Shard {
         large_threshold: this.context.options.largeThreshold ?? 50,
         shard: [this.id, this.context.totalShards],
         // TODO: support presence:
-        intents: this.context.options.intents,
+        intents: this.context.options.intents, // TODO: create utility class for managing intents
       },
     });
 
@@ -175,14 +193,20 @@ export class Shard {
   private sendHeartbeat() {
     this.sendPayload({
       op: GatewayOpCode.Heartbeat,
-      d: null, // TODO: Implement last sequence number
+      d: this.lastSequence,
     });
+    this.lastHeartbeatSent = new Date();
     this.logger.debug(`Heartbeat sent`);
   }
 
   private sendPayload<TPayload = unknown>(payload: GatewaySendEventPayload<TPayload>) {
     assert(this.socket);
     this.socket.send(JSON.stringify(payload));
+  }
+
+  private handleHeartbeatAck() {
+    this.lastHeartbeatAck = new Date();
+    this.logger.debug(`Heartbeat acknowledged at ${this.lastHeartbeatAck}`);
   }
 
   private onError(event: Event) {
