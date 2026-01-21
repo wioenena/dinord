@@ -1,10 +1,10 @@
-import { formatCustomEmoji } from "@dinord/api-types";
 import { Snowflake } from "@dinord/snowflake";
 import { assertEquals } from "@std/assert";
 import { assertThrows } from "@std/assert/throws";
 import {
   type EmailAddress,
   formatChannelMention,
+  formatCustomEmoji,
   formatEmailLink,
   formatGuildNavigation,
   formatPhoneLink,
@@ -18,12 +18,12 @@ import {
 } from "./mod.ts";
 
 Deno.test("formatUserMention", () => {
-  const id = new Snowflake(123n)
+  const id = new Snowflake(123n);
   assertEquals(formatUserMention(id), `<@${id}>`);
 });
 
 Deno.test("formatChannelMention", () => {
-  const id = new Snowflake(123n)
+  const id = new Snowflake(123n);
   assertEquals(formatChannelMention(id), `<#${id}>`);
 });
 
